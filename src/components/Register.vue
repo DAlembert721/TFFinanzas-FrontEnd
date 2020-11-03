@@ -1,7 +1,7 @@
 <template>
-  <v-container fluid class="py-0">
+  <v-container style="height: 100vh; width: 100%">
     <v-row>
-      <v-card width="70%">
+      <v-card elevation="5" rounded class="mx-auto my-7" width="60%">
         <v-row>
           <v-img max-height="10%" max-width="10%" class="mx-auto my-4" src="@/assets/user.png"></v-img>
         </v-row>
@@ -63,7 +63,7 @@ export default {
     address: ''
   }),
   methods: {
-    login(){
+    login() {
       this.$router.push('login')
     }
   }
