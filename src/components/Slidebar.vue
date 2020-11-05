@@ -15,6 +15,12 @@
           </v-list-item-icon>
           <v-list-item-title>Perfil</v-list-item-title>
         </v-list-item>
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon>mdi-package</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Productos</v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
     <v-spacer></v-spacer>

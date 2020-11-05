@@ -1,5 +1,5 @@
 <template>
-  <v-container style="height: 100%; width: 100%">
+  <v-container fluid class="bg">
     <v-row>
       <v-card elevation="5" rounded class="mx-auto my-7" width="60%">
         <v-row>
@@ -49,5 +49,10 @@ export default {
 </script>
 
 <style scoped>
-
+  .bg {
+    height: 100%;
+    width: 100%;
+    background-color: #85FFBD;
+    background-image: linear-gradient(45deg, #85FFBD 0%, #FFFB7D 100%);
+  }
 </style>
