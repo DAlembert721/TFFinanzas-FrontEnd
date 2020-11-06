@@ -5,6 +5,9 @@ import App from "@/App";
 import Login from "@/components/Login";
 import Register from "@/components/Register";
 import Landing from "@/components/Landing";
+import Profile from "@/components/Profile";
+import Client from "@/components/Client";
+import Product from "@/components/Product";
 
 Vue.use(Router)
 
@@ -15,6 +18,9 @@ export default new Router({
         { path: '/index', name: 'index', component: Landing },
         { path: '/home', name: 'home', component: Home},
         { path: '/login', name: 'login', component: Login },
-        { path: '/register', name: 'register', component: Register }
+        { path: '/register', name: 'register', component: Register },
+        { path: '/profile', name: 'profile', component: Profile },
+        { path: '/client', name: 'client', component: Client },
+        { path: '/product', name: 'product', component: Product }
     ]
 })

@@ -9,7 +9,7 @@
           </v-list-item-icon>
           <v-list-item-title>Home</v-list-item-title>
         </v-list-item>
-        <v-list-item>
+        <v-list-item @click="toProfile()">
           <v-list-item-icon>
             <v-icon>mdi-account</v-icon>
           </v-list-item-icon>
@@ -35,7 +35,12 @@ export default {
   name: "Slidebar",
   data: () => ({
     drawer: false
-  })
+  }),
+  methods: {
+    toProfile() {
+      this.$router.push('profile')
+    }
+  }
 }
 </script>
 
