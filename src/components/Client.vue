@@ -28,7 +28,7 @@
         <v-row class="mx-auto d-flex justify-center py-5">
           <v-dialog v-model="editClient" max-width="40%">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="green accent-2" v-bind="attrs" v-on="on">Editar perfil</v-btn>
+              <v-btn color="green accent-2" v-bind="attrs" v-on="on">Editar cliente</v-btn>
             </template>
             <v-card>
               <v-card-title>Editar cliente</v-card-title>

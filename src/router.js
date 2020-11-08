@@ -8,6 +8,7 @@ import Landing from "@/components/Landing";
 import Profile from "@/components/Profile";
 import Client from "@/components/Client";
 import Product from "@/components/Product";
+import Operation from "@/components/Operation";
 
 Vue.use(Router)
 
@@ -21,6 +22,7 @@ export default new Router({
         { path: '/register', name: 'register', component: Register },
         { path: '/profile', name: 'profile', component: Profile },
         { path: '/client', name: 'client', component: Client },
-        { path: '/product', name: 'product', component: Product }
+        { path: '/product', name: 'product', component: Product },
+        { path: '/operation', name: 'operation', component: Operation }
     ]
 })
