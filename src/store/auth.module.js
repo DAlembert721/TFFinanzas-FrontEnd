@@ -31,6 +31,7 @@ export const auth = {
             commit('logout');
         },
         register({commit}, data) {
+            console.log(data)
             const account = {
                 email: data.email,
                 password: data.password,
@@ -41,6 +42,7 @@ export const auth = {
                 address: data.address,
                 organization: data.organization,
                 ruc: data.ruc,
+                district_id: data.districtId,
             }
             return AccountDataService.register(account)
                 .then(response => {
