@@ -65,6 +65,20 @@ export default {
   methods: {
     login() {
       this.$router.push('login')
+    },
+    register() {
+      const data = {
+        firstName: this.firstName,
+        lastName: this.lastName,
+        dni: this.dni,
+        phone: this.phone,
+        email: this.email,
+        password: this.password,
+        district: this.district,
+        address: this.address,
+        ruc: '',
+        organization: ''
+      }
     }
   }
 }
