@@ -9,6 +9,7 @@ class AccountDataService {
                 this.decodedToken = jwtDecode(response.data.access)
                 console.log(this.decodedToken)
                 localStorage.setItem('token', response.data.access)
+                localStorage.setItem('user', JSON.stringify(response.data))
                 localStorage.setItem('refresh', response.data.refresh)
                 localStorage.setItem('id', this.decodedToken.user_id)
             }

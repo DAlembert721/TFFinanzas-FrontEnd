@@ -106,6 +106,7 @@
 
 <script>
   import Slidebar from "@/components/Slidebar";
+  import ClientDataService from "@/services/ClientDataService";
 
   export default {
     name: "Home",
@@ -122,16 +123,32 @@
       firstName: 'Prueba',
       companyName: 'Mi empresa',
       ruc: '098765432111',
-      addClient: false
+      addClient: false,
+      clients: [],
     }),
     mounted() {
       this.id = localStorage.getItem('id')
+      this.getClientsByAccount();
     },
-    /*created() {
+    created() {
       if (!localStorage.getItem('token')) {
         this.$router.push('/login')
       }
-    }*/
+
+    },
+    methods: {
+      getClientsByAccount() {
+        ClientDataService.getClients()
+                .then(response => {
+                  this.clients = response.data;
+                  console.log(this.clients);
+                })
+                .catch(e => {
+                  console.log(e);
+                })
+      }
+    }
+
   }
 </script>
 

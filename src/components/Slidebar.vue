@@ -26,7 +26,7 @@
     <v-spacer></v-spacer>
     <v-toolbar-title>Otorongo</v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-btn>Cerrar sesión</v-btn>
+    <v-btn @click="logout">Cerrar sesión</v-btn>
   </v-app-bar>
 </template>
 
@@ -39,6 +39,10 @@ export default {
   methods: {
     toProfile() {
       this.$router.push('profile')
+    },
+    logout() {
+      this.$store.dispatch('auth/logout');
+      this.$router.push('index')
     }
   }
 }
