@@ -60,7 +60,7 @@ export default {
       this.$router.push('register')
     },
     login(){
-      this.$router.push('login')
+      this.$router.push({name: 'login'})
     }
   }
   }

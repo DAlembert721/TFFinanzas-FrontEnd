@@ -25,7 +25,7 @@
                     <v-text-field v-model="region" label="Región"></v-text-field>
                   </v-col>
                   <v-col>
-                    <v-text-field v-model="city" label="Provincia"></v-text-field>
+                    <v-text-field v-model="province" label="Provincia"></v-text-field>
                   </v-col>
                   <v-col>
                     <v-text-field v-model="district" label="Distrito"></v-text-field>
@@ -50,6 +50,11 @@
 <script>
 export default {
   name: "Register",
+  computed: {
+    loggedIn() {
+      return this.$store.state.auth.status.loggedIn;
+    }
+  },
   data: () => ({
     firstName: '',
     lastName: '',
@@ -58,16 +63,16 @@ export default {
     email: '',
     password: '',
     region: null,
-    city: null,
+    province: null,
     district: null,
     address: ''
   }),
   methods: {
     login() {
-      this.$router.push('login')
+      this.$router.push('/login')
     },
     register() {
-      const data = {
+      /*const data = {
         firstName: this.firstName,
         lastName: this.lastName,
         dni: this.dni,
@@ -78,7 +83,7 @@ export default {
         address: this.address,
         ruc: '',
         organization: ''
-      }
+      }*/
     }
   }
 }

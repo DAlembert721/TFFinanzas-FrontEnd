@@ -17,11 +17,11 @@
             </v-row>
             <v-row>
               <v-col>
-                <v-text-field v-model="password" label="Contraseña"></v-text-field>
+                <v-text-field type="password" v-model="password" label="Contraseña"></v-text-field>
               </v-col>
             </v-row>
             <v-row>
-              <v-btn class="mx-auto" elevation="2" color="green accent-2">Crear cuenta</v-btn>
+              <v-btn class="mx-auto" elevation="2" color="green accent-2" @click="handleLogin()">LogIn</v-btn>
             </v-row>
             <v-row class="d-flex justify-center mt-3">
               ¿Aún no tienes una cuenta?<a class="ml-1" @click="register()">Regístrate</a>
@@ -38,9 +38,42 @@ export default {
   name: "Login",
   data: () => ({
     email: '',
-    password: ''
+    password: '',
+    isValid: true,
+    emailRules: [v => !!v || 'Email is required'],
+    passwordRules: [v => !!v || 'Password is required'],
+    token: "",
   }),
+  computed: {
+    loggedIn() {
+      return this.$store.state.auth.status.loggedIn;
+    }
+  },
+  created() {
+    if (this.loggedIn) {
+      this.$router.push('/home');
+    }
+  },
   methods: {
+    handleLogin() {
+      const user = {
+        email: this.email,
+        password: this.password,
+      };
+
+      if (user.email && user.password) {
+        this.$store.dispatch('auth/login', user)
+              .then(() => {
+                this.logComplete();
+              })
+              .catch(e => {
+                console.log(e);
+              })
+      }
+    },
+    logComplete() {
+        this.$router.push({name: 'home'});
+    },
     register() {
       this.$router.push('register')
     }

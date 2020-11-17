@@ -3,7 +3,7 @@ import axios from 'axios';
 const token = localStorage.getItem('token');
 
 export default axios.create({
-    baseURL: "https://otorongo.herukuapp.com/",
+    baseURL: "https://otorongo.herokuapp.com/",
     headers: {
         "Content-type": "application/json",
     }
