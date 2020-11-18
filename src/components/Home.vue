@@ -71,7 +71,7 @@
                           <v-col>
                             <v-select :items="rates"
                                       v-model="rateChose"
-                                      item-text=""
+                                      item-text="combined"
                                       item-value="id"
                                       label="Tipo tasa"
                                       return-object></v-select>
@@ -153,7 +153,7 @@
       },
       addClientDialog: false,
       currencies: [ 'Soles' ],
-      rateChose: { id: 0, name: '', type: '', combined: '' },
+      rateChose: { id: 0, combined: '' },
       rates: []
     }),
     mounted() {
@@ -187,7 +187,11 @@
       },
       getRates() {
         RateDataService.getRates().then(response => {
-          this.rates = response.data;
+          const values = response.data;
+          values.forEach(value => {
+            const val = {id: value.id, combined: value.name + ' ' + value.type,}
+            this.rates.push(val);
+          })
         }).catch(e => {
           console.log(e);
         });
