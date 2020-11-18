@@ -4,29 +4,29 @@
     <v-row class="full">
       <v-col class="col-sm-3">
         <v-row no-gutters class="d-flex justify-center pt-10">
-          <h3>{{ firstName + ' ' + lastName }}</h3>
+          <h3>{{ client.first_name + ' ' + client.last_name }}</h3>
         </v-row>
         <v-row no-gutters class="d-flex justify-center">
           <h4 class="pr-1">Línea de crédito:</h4>
-          <h4>{{ creditLine }}</h4>
+          <h4>{{ client.credit_total }}</h4>
         </v-row>
         <v-row no-gutters class="mx-auto d-flex justify-center py-6">
           <v-img max-width="60%" src="@/assets/user.png"></v-img>
         </v-row>
         <v-row no-gutters class="mx-auto d-flex justify-center">
           <h3 class="pr-1">Celular:</h3>
-          <h3>{{ phone }}</h3>
+          <h3>{{ client.phone }}</h3>
         </v-row>
         <v-row no-gutters class="mx-auto d-flex justify-center">
           <h3 class="pr-1">DNI:</h3>
-          <h3>{{ dni }}</h3>
+          <h3>{{ client.dni }}</h3>
         </v-row>
         <v-row no-gutters class="mx-auto d-flex justify-center">
           <h3 class="pr-1">Email:</h3>
-          <h3>{{ email }}</h3>
+          <h3>{{ client.email }}</h3>
         </v-row>
         <v-row class="mx-auto d-flex justify-center py-5">
-          <v-dialog v-model="editClient" max-width="40%">
+          <v-dialog v-model="editClientDialog" max-width="40%">
             <template v-slot:activator="{ on, attrs }">
               <v-btn color="green accent-2" v-bind="attrs" v-on="on">Editar cliente</v-btn>
             </template>
@@ -34,37 +34,37 @@
               <v-card-title>Editar cliente</v-card-title>
               <v-card-text>
                 <v-row>
-                  <v-text-field label="Nombres"></v-text-field>
+                  <v-text-field v-model="client.first_name" label="Nombres"></v-text-field>
                 </v-row>
                 <v-row>
-                  <v-text-field label="Apellidos"></v-text-field>
+                  <v-text-field v-model="client.last_name" label="Apellidos"></v-text-field>
                 </v-row>
                 <v-row>
-                  <v-text-field label="Celular"></v-text-field>
+                  <v-text-field v-model="client.phone" label="Celular"></v-text-field>
                 </v-row>
                 <v-row>
-                  <v-text-field label="DNI"></v-text-field>
+                  <v-text-field v-model="client.dni" label="DNI"></v-text-field>
                 </v-row>
                 <v-row>
-                  <v-text-field label="Email"></v-text-field>
+                  <v-text-field v-model="client.email" label="Email"></v-text-field>
                 </v-row>
                 <v-row>
-                  <v-text-field label="Dirección"></v-text-field>
+                  <v-text-field v-model="client.address" label="Dirección"></v-text-field>
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-text-field label="Tasa de interés"></v-text-field>
+                    <v-text-field v-model="client.rate_value" label="Tasa de interés"></v-text-field>
                   </v-col>
                   <v-col>
-                    <v-select label="Tipo tasa"></v-select>
+                    <v-select  label="Tipo tasa"></v-select>
                   </v-col>
                 </v-row>
                 <v-row>
-                  <v-text-field label="Día de pago"></v-text-field>
+                  <v-text-field v-model="client.payday" label="Día de pago"></v-text-field>
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-text-field label="Línea de crédito"></v-text-field>
+                    <v-text-field v-model="client.credit_total" label="Línea de crédito"></v-text-field>
                   </v-col>
                   <v-col>
                     <v-select label="Moneda"></v-select>
@@ -85,12 +85,12 @@
       <v-col class="col-sm-9">
         <v-row class="d-flex justify-center py-5">
           <h2 class="pr-2">Tasa de interés: </h2>
-          <h2 class="pr-2">{{ rateValue + '%' }}</h2>
-          <h2>{{ rateName }}</h2>
+          <h2 class="pr-2">{{ client.rate_value + '%' }}</h2>
+          <h2>{{ client.rate_name }}</h2>
         </v-row>
         <v-row class="d-flex justify-center">
           <v-card>
-            <v-card-title></v-card-title>
+            <v-card-title>Facturas</v-card-title>
             <v-data-table :headers="headers" :items="items" :items-per-page="10" :footer-props="{
                 'items-per-page-text': 'Facturas por página:'
               }" class="elevation-2">
@@ -121,16 +121,30 @@
         { text: 'Detalles', value: 'actions', sortable: false }
       ],
       clientId: null,
-      firstName: 'Matías',
-      lastName: 'Prado Rosales',
-      creditLine: 0,
-      phone: '987654321',
-      dni: '9876543',
-      email: 'faraonloveshady@email.com',
-      rateValue: 8,
-      rateName: 'TEA',
-      editClient: false,
-      items: [ { billId: 1, date: '05/11/2020', operationsQuantity: 2, totalPay: 13 }]
+      client: {
+        first_name: '',
+        last_name: '',
+        email: '',
+        address: '',
+        phone: '',
+        dni: '',
+        credit_total: 0,
+        rate_value: 0,
+        rate_id: '',
+        rate_name: '',
+        payday: null,
+        quotation: 1,
+        billing_closing: '',
+        maintenance: 0
+      },
+      bill: {
+        date: '',
+        operationsQuantity: 0,
+        total: 0,
+      },
+      editClientDialog: false,
+      items: [],
+      bills: []
     }),
     mounted() {
       this.clientId = this.$route.params.id;
@@ -148,16 +162,18 @@
         this.$router.push(`/bill/${id}`)
       },
       getClientById() {
-        ClientDataService.getClientByAccountIdAndId(this.clientId)
-        .then(response => {
-          const client = response.data;
-          this.firstName = client.first_name;
-          this.lastName = client.last_name;
-          this.dni = client.dni;
-          this.rateValue = client.rate_value;
-          this.rateName = client.rate_name;
-          this.phone = client.phone;
-          this.creditLine = client.credit_total;
+        ClientDataService.getClientByAccountIdAndId(this.clientId).then(response => {
+          const clientResponse = response.data;
+          this.client.first_name = clientResponse.first_name;
+          this.client.last_name = clientResponse.last_name;
+          this.client.email = clientResponse.email;
+          this.client.address = clientResponse.address;
+          this.client.dni = clientResponse.dni;
+          this.client.rate_value = clientResponse.rate_value;
+          this.client.rate_name = clientResponse.rate_name;
+          this.client.phone = clientResponse.phone;
+          this.client.credit_total = clientResponse.credit_total;
+          this.client.payday = clientResponse.payday;
         })
         .catch(e => console.log(e));
       },
