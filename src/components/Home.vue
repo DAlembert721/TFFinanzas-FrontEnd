@@ -58,7 +58,7 @@
                         </v-row>
                         <v-row>
                           <v-col>
-                            <v-text-field v-model="client.credit_total" label="Línea de crédito"></v-text-field>
+                            <v-text-field v-model="client.credit_total" label="Línea de crédito" prefix="S/"></v-text-field>
                           </v-col>
                           <v-col>
                             <v-select :items="currencies" v-model="client.currency" label="Moneda"></v-select>
@@ -66,7 +66,7 @@
                         </v-row>
                         <v-row>
                           <v-col>
-                            <v-text-field v-model="client.rate_value" label="Tasa de interés"></v-text-field>
+                            <v-text-field v-model="client.rate_value" label="Tasa de interés" suffix="%"></v-text-field>
                           </v-col>
                           <v-col>
                             <v-select :items="rates"
@@ -97,7 +97,7 @@
           </v-card-title>
           <v-data-table
               :headers="headers"
-              :items="desserts"
+              :items="clients"
               :search="search"
               :footer-props="{
                 'items-per-page-text': 'Clientes por página:'
@@ -149,12 +149,16 @@
         currency: '',
         rate_value: '',
         rate_id: '',
-        payday: ''
+        payday: '',
+        quotation: 1,
+        billing_closing: '',
+        maintenance: 0
       },
       addClientDialog: false,
       currencies: [ 'Soles' ],
       rateChose: { id: 0, combined: '' },
-      rates: []
+      rates: [],
+      clients: []
     }),
     mounted() {
       this.id = localStorage.getItem('id')
@@ -197,6 +201,7 @@
         });
       },
       saveClient() {
+        this.client.payday = this.client.billing_closing;
         ClientDataService.saveClient(this.id, this.client).then(response => {
           console.log(response);
           this.client = { first_name: '', last_name: '', email: '', address: '', phone: '', dni: '', credit_total: '', currency: '', rate_value: '', rate: '', payday: '' }

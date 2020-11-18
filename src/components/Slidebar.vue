@@ -3,30 +3,26 @@
     <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
     <v-navigation-drawer v-model="drawer" app temporary color="grey">
       <v-list nav dense>
-        <v-list-item>
-          <v-list-item-icon @click="toHome()">
-            <v-icon>mdi-home</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title @click="toHome()">
-            Home
-          </v-list-item-title>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-icon @click="toProfile()">
-            <v-icon>mdi-account</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title @click="toProfile()">
-            Perfil
-          </v-list-item-title>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-icon @click="toProducts()">
-            <v-icon>mdi-package</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title @click="toProducts()">
-            Productos
-          </v-list-item-title>
-        </v-list-item>
+        <v-list-item-group active-class="text--accent-4">
+          <v-list-item>
+            <v-list-item-icon @click="toHome()">
+              <v-icon>mdi-home</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title @click="toHome()">Home</v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-icon @click="toProfile()">
+              <v-icon>mdi-account</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title @click="toProfile()">Perfil</v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-icon @click="toProducts()">
+              <v-icon>mdi-package</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title @click="toProducts()">Productos</v-list-item-title>
+          </v-list-item>
+        </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
     <v-spacer></v-spacer>
