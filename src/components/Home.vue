@@ -81,7 +81,12 @@
                     </v-row>
                     <v-row>
                       <v-spacer></v-spacer>
-                      <v-text-field type="date" v-model="client.payday" label="Día de pago"></v-text-field>
+                      <v-col>
+                        <v-text-field v-model="client.maintenance" label="Mantenimiento" prefix="S/."></v-text-field>
+                      </v-col>
+                      <v-col>
+                        <v-text-field v-model="payday" label="Día de pago"></v-text-field>
+                      </v-col>
                       <v-spacer></v-spacer>
                     </v-row>
                   </v-card-text>
@@ -101,8 +106,13 @@
               :search="search"
               :footer-props="{
                 'items-per-page-text': 'Clientes por página:'
-              }"
-          ></v-data-table>
+              }">
+            <template v-slot:item.actions="{ item }">
+              <v-icon small class="mr-2" @click="goToClient(item)">
+                mdi-account-details
+              </v-icon>
+            </template>
+          </v-data-table>
         </v-card>
       </v-col>
     </v-row>
@@ -120,11 +130,12 @@
     components: {Slidebar},
     data: () => ({
       headers: [
-        { text: 'Nombre', align: 'start', sortable: true, value: 'firstName' },
+        { text: 'Nombre', align: 'start', sortable: true, value: 'fullName' },
         { text: 'Línea de crédito', value: 'creditLine', sortable: false },
         { text: 'DNI', value: 'dni', sortable: false },
         { text: 'Número telefónico', value: 'phone', sortable: false },
-        { text: 'Fecha de pago', value: 'payday', sortable: false }
+        { text: 'Fecha de pago', value: 'payday', sortable: false },
+        { text: 'Detalles', value: 'actions', sortable: false}
       ],
       id: 0,
       account: {
@@ -145,20 +156,21 @@
         address: '',
         phone: '',
         dni: '',
-        credit_total: '',
-        currency: '',
-        rate_value: '',
+        credit_total: 0,
+        rate_value: 0,
         rate_id: '',
-        payday: '',
+        payday: null,
         quotation: 1,
         billing_closing: '',
         maintenance: 0
       },
+      payday: 1,
       addClientDialog: false,
       currencies: [ 'Soles' ],
-      rateChose: { id: 0, combined: '' },
+      rateChose: null,
       rates: [],
-      clients: []
+      clients: [],
+      search: null,
     }),
     mounted() {
       this.id = localStorage.getItem('id')
@@ -182,7 +194,23 @@
       getClientsByAccount() {
         ClientDataService.getClients()
                 .then(response => {
-                  this.clients = response.data;
+                  const values = response.data;
+                  values.forEach(value => {
+                    const val = {
+                      id: value.id,
+                      fullName: value.first_name + ' ' + value.last_name,
+                      address: value.address,
+                      phone: value.phone,
+                      dni: value.dni,
+                      creditLine: value.credit_total,
+                      rateValue: value.rate_value,
+                      rateName: value.rate_name,
+                      payday: new Date(value.payday).getDay(),
+                      quotation: value.quotation,
+                      billingClosing: value.billing_closing,
+                      maintenance: value.maintenance}
+                      this.clients.push(val);
+                  })
                   console.log(this.clients);
                 })
                 .catch(e => {
@@ -190,28 +218,49 @@
                 })
       },
       getRates() {
+        this.clients = [];
         RateDataService.getRates().then(response => {
           const values = response.data;
           values.forEach(value => {
             const val = {id: value.id, combined: value.name + ' ' + value.type,}
             this.rates.push(val);
           })
+          this.rateChose = this.rates[1];
         }).catch(e => {
           console.log(e);
         });
       },
       saveClient() {
-        this.client.payday = this.client.billing_closing;
+        this.client.rate_id = this.rateChose.id;
+        this.client.payday = `0001-01-${this.payday}`;
+        this.client.billing_closing = this.client.payday;
+        console.log(this.client);
         ClientDataService.saveClient(this.id, this.client).then(response => {
           console.log(response);
-          this.client = { first_name: '', last_name: '', email: '', address: '', phone: '', dni: '', credit_total: '', currency: '', rate_value: '', rate: '', payday: '' }
+          this.client = {
+            first_name: '',
+            last_name: '',
+            email: '',
+            address: '',
+            phone: '',
+            dni: '',
+            credit_total: 0,
+            rate_value: 0,
+            rate_id: '',
+            payday: '',
+            quotation: 1,
+            billing_closing: '',
+            maintenance: 0}
           this.getClientsByAccount();
           this.addClientDialog = false;
         }).catch(e => {
           console.log(e);
         });
       },
-    }
+      goToClient(client) {
+        this.$router.push(`/client/${client.id}`)
+      }
+    },
 
   }
 </script>

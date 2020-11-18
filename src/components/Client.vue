@@ -107,6 +107,8 @@
 
 <script>
   import Slidebar from "@/components/Slidebar";
+  import ClientDataService from "@/services/ClientDataService";
+  import BillDataService from "@/services/BillDataService";
   export default {
   name: "Client",
     components: {Slidebar},
@@ -118,6 +120,7 @@
         { text: 'Pago total', value: 'totalPay', sortable: false },
         { text: 'Detalles', value: 'actions', sortable: false }
       ],
+      clientId: null,
       firstName: 'Matías',
       lastName: 'Prado Rosales',
       creditLine: 0,
@@ -129,11 +132,53 @@
       editClient: false,
       items: [ { billId: 1, date: '05/11/2020', operationsQuantity: 2, totalPay: 13 }]
     }),
-    methods: {
-      editItem(id) {
-        console.log(id)
+    mounted() {
+      this.clientId = this.$route.params.id;
+      this.getClientById();
+      this.getBills();
+    },
+    created() {
+      if (!localStorage.getItem('token')) {
+        this.$router.push('/login')
       }
-    }
+    },
+    methods: {
+      editItem(item) {
+        const id = item.billId;
+        this.$router.push(`/bill/${id}`)
+      },
+      getClientById() {
+        ClientDataService.getClientByAccountIdAndId(this.clientId)
+        .then(response => {
+          const client = response.data;
+          this.firstName = client.first_name;
+          this.lastName = client.last_name;
+          this.dni = client.dni;
+          this.rateValue = client.rate_value;
+          this.rateName = client.rate_name;
+          this.phone = client.phone;
+          this.creditLine = client.credit_total;
+        })
+        .catch(e => console.log(e));
+      },
+      getBills() {
+        BillDataService.getBillByClientId(this.clientId)
+        .then(response => {
+          this.items = [];
+          const values = response.data;
+          values.forEach(value => {
+            const bill = {
+              billId: value.id,
+              date: value.date,
+              operationsQuantity: value.total,
+              totalPay: value.balance
+            }
+            this.items.push(bill);
+          })
+        }).catch(e => console.log(e))
+      },
+    },
+
   }
 </script>
 

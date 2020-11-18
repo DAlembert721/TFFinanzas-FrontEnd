@@ -21,8 +21,8 @@ export default new Router({
         { path: '/login', name: 'login', component: Login },
         { path: '/register', name: 'register', component: Register },
         { path: '/profile', name: 'profile', component: Profile },
-        { path: '/client', name: 'client', component: Client },
+        { path: '/client/:id', name: 'client', component: Client },
         { path: '/product', name: 'product', component: Product },
-        { path: '/operation', name: 'operation', component: Operation }
+        { path: '/bill/:id', name: 'bill', component: Operation }
     ]
 })

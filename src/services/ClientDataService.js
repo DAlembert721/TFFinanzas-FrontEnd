@@ -14,6 +14,12 @@ class ClientDataService {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
         });
     }
+
+    getClientByAccountIdAndId(id) {
+        const accountId = localStorage.getItem('id');
+        return http.get(`api/accounts/${accountId}/clients/${id}/`, {
+            headers: authHeader()});
+    }
 }
 
 export default new ClientDataService();
