@@ -8,22 +8,22 @@
       <v-col class="col-sm-7 d-flex justify-start align-center full">
         <div class="details">
           <div>
-            <strong>Nombre:</strong> {{ firstName }}
+            <strong>Nombre:</strong> {{ account.first_name }}
           </div>
           <div>
-            <strong>Apellido:</strong> {{ lastName }}
+            <strong>Apellido:</strong> {{ account.last_name }}
           </div>
           <div>
-            <strong>Celular:</strong> {{ phone }}
+            <strong>Celular:</strong> {{ account.phone }}
           </div>
           <div>
-            <strong>DNI:</strong> {{ dni }}
+            <strong>DNI:</strong> {{ account.dni }}
           </div>
           <div>
-            <strong>Email:</strong> {{ email }}
+            <strong>Email:</strong> {{ account.email }}
           </div>
           <div class="pb-3">
-            <strong>Dirección:</strong> {{ address + ' - ' + district + ', ' + city + ', ' + region }}
+            <strong>Dirección:</strong> {{ account.address }}
           </div>
           <v-dialog v-model="editDialog" max-width="40%">
             <template v-slot:activator="{ on, attribs }">
@@ -34,22 +34,22 @@
               <v-card-text>
                 <v-container>
                   <v-row>
-                    <v-text-field label="Nombre"></v-text-field>
+                    <v-text-field v-model="account.first_name" label="Nombre"></v-text-field>
                   </v-row>
                   <v-row>
-                    <v-text-field label="Apellidos"></v-text-field>
+                    <v-text-field v-model="account.last_name" label="Apellidos"></v-text-field>
                   </v-row>
                   <v-row>
-                    <v-text-field label="Celular"></v-text-field>
+                    <v-text-field v-model="account.phone" label="Celular"></v-text-field>
                   </v-row>
                   <v-row>
-                    <v-text-field label="DNI"></v-text-field>
+                    <v-text-field v-model="account.dni" label="DNI"></v-text-field>
                   </v-row>
                   <v-row>
-                    <v-text-field label="Email"></v-text-field>
+                    <v-text-field v-model="account.email" label="Email"></v-text-field>
                   </v-row>
                   <v-row>
-                    <v-text-field label="Dirección"></v-text-field>
+                    <v-text-field v-model="account.address" label="Dirección"></v-text-field>
                   </v-row>
                   <v-row>
                     <v-text-field :append-icon="hidePassword ? 'mdi-eye' : 'mdi-eye-off'"
@@ -63,7 +63,7 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn small color="green accent-2" @click="editDialog = false">Cancelar</v-btn>
-                <v-btn small color="green accent-2" @click="editDialog = false">Guardar</v-btn>
+                <v-btn small color="green accent-2" @click="updateUserById()">Guardar</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -75,24 +75,48 @@
 
 <script>
   import Slidebar from "@/components/Slidebar";
+  import AccountDataService from "@/services/AccountDataService";
 
   export default {
     name: "Profile",
     components: {Slidebar},
     data: () => ({
       id: 0,
-      firstName: 'William',
-      lastName: 'Gonzales',
-      phone: '987654321',
-      dni: '9875432',
-      email: 'willy_40@gmail.com',
-      address: 'Av. Arequipa N°1420',
-      region: 'Lima',
-      city: 'Lima',
-      district: 'San Isidro',
+      account: {
+        email: "",
+        first_name: "",
+        last_name: "",
+        dni: "",
+        phone: "",
+        address: "",
+        organization: "",
+        ruc: "",
+        location: ""
+      },
       editDialog: false,
       hidePassword: true
-    })
+    }),
+    mounted() {
+      this.id = localStorage.getItem('id')
+      this.getUserById(this.id);
+    },
+    methods: {
+      getUserById(id) {
+        AccountDataService.getAccountById(id).then(response => {
+          this.account = response.data;
+          console.log(this.account);
+        }).catch(e => {
+          console.log(e);
+        });
+      },
+      updateUserById() {
+        AccountDataService.updateAccountById(this.id, this.account).then(response => {
+          console.log(response);
+        }).catch(e => {
+          console.log(e);
+        })
+      }
+    }
   }
 </script>
 

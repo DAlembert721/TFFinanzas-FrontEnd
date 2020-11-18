@@ -7,7 +7,7 @@ class AccountDataService {
         return http.post('api/login/', data).then( response => {
             if (response.data.access) {
                 this.decodedToken = jwtDecode(response.data.access)
-                console.log(this.decodedToken)
+                //console.log(this.decodedToken)
                 localStorage.setItem('token', response.data.access)
                 localStorage.setItem('user', JSON.stringify(response.data))
                 localStorage.setItem('refresh', response.data.refresh)
@@ -23,6 +23,18 @@ class AccountDataService {
 
     logout() {
         localStorage.clear();
+    }
+
+    getAccountById(id) {
+        return http.get(`api/accounts/${id}/`, {
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+        });
+    }
+
+    updateAccountById(id, data) {
+        return http.put(`api/accounts/${id}/`, data, {
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+        });
     }
 }
 

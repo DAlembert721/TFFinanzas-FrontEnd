@@ -8,7 +8,7 @@
         <v-btn @click="login()">Iniciar sesión</v-btn>
       </v-app-bar>
     </v-row>
-    <v-row class="align-stretch" style="background-color: yellow">
+    <v-row class="align-stretch">
       <v-col class="container col-sm-6 d-flex flex-column align-center justify-center">
         <v-container class="d-flex flex-column align-center">
           <h1>OTORONGO</h1>

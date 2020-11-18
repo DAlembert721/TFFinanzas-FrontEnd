@@ -4,22 +4,28 @@
     <v-navigation-drawer v-model="drawer" app temporary color="grey">
       <v-list nav dense>
         <v-list-item>
-          <v-list-item-icon>
+          <v-list-item-icon @click="toHome()">
             <v-icon>mdi-home</v-icon>
           </v-list-item-icon>
-          <v-list-item-title>Home</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click="toProfile()">
-          <v-list-item-icon>
-            <v-icon>mdi-account</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>Perfil</v-list-item-title>
+          <v-list-item-title @click="toHome()">
+            Home
+          </v-list-item-title>
         </v-list-item>
         <v-list-item>
-          <v-list-item-icon>
+          <v-list-item-icon @click="toProfile()">
+            <v-icon>mdi-account</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title @click="toProfile()">
+            Perfil
+          </v-list-item-title>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-icon @click="toProducts()">
             <v-icon>mdi-package</v-icon>
           </v-list-item-icon>
-          <v-list-item-title>Productos</v-list-item-title>
+          <v-list-item-title @click="toProducts()">
+            Productos
+          </v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -39,6 +45,12 @@ export default {
   methods: {
     toProfile() {
       this.$router.push('profile')
+    },
+    toHome() {
+      this.$router.push('home')
+    },
+    toProducts() {
+      this.$router.push('products')
     },
     logout() {
       this.$store.dispatch('auth/logout');
