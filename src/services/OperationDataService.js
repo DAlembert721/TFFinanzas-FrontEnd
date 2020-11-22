@@ -8,5 +8,13 @@ class OperationDataService {
         return http.get(`clients/${clientId}/operations/`, {
             header: authHeader()} );
     }
+
+    saveOperation(data, clientId) {
+        return http.post(`clients/${clientId}/operations/`, data);
+    }
+
+    saveProductOnOperation(operationId, productId, data) {
+        return http.post(`operations/${operationId}/products/${productId}/`, data);
+    }
 }
 export default new OperationDataService();

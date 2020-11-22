@@ -52,7 +52,7 @@ export default {
       this.$router.push({ name: 'home' })
     },
     toProducts() {
-      this.$router.push({name: 'products'})
+      this.$router.push({name: 'product'})
     },
     logout() {
       this.$store.dispatch('auth/logout');

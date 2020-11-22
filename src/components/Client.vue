@@ -83,7 +83,7 @@
         </v-row>
       </v-col>
       <v-col class="col-sm-9">
-        <v-row class="d-flex justify-center pt-5">
+        <v-row class="d-flex justify-center py-5">
           <h2 class="pr-2">Tasa de interés compensatorio: </h2>
           <h2 class="pr-2">{{ client.compensatory_value + '%' }}</h2>
           <h2>{{ client.rate_name }}</h2>
@@ -95,7 +95,53 @@
         </v-row>
         <v-row class="d-flex justify-center">
           <v-card>
-            <v-card-title>Operaciones</v-card-title>
+            <v-card-title>
+              Operaciones
+              <v-spacer></v-spacer>
+              <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
+                            hide-details>
+                <v-dialog slot="append" v-model="addOperationDialog" max-width="40%">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn class="md12 hidden-sm-and-down" color="green accent-2" v-bind="attrs"
+                           v-on="on">+ Agregar operación
+                    </v-btn>
+                    <v-btn class="sm12 hidden-md-and-up" color="green accent-2" v-bind="attrs"
+                           v-on="on" small>+
+                    </v-btn>
+                  </template>
+                  <v-card>
+                    <v-card-title>Agregar operación</v-card-title>
+                    <v-card-text>
+                      <v-spacer></v-spacer>
+                      <v-row>
+                        <v-select :items="products"
+                                  item-text="name"
+                                  multiple
+                                  v-model="productsSelected"
+                                  placeholder="Seleccione productos"
+                                  return-object></v-select>
+                      </v-row>
+                      <v-row class="align-content-center" v-bind:key="product.id" v-for="product in productsSelected">
+                        <v-spacer></v-spacer>
+                        <v-col class="col-sm-5 d-flex align-center">
+                          <h3>{{ product.name }}</h3>
+                        </v-col>
+                        <v-col class="col-sm-5 d-flex align-center">
+                          <v-text-field v-model="product.quantity" class="m-0 p-0" label="Cantidad"></v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-spacer></v-spacer>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="green accent-2" @click="addOperation()">Agregar</v-btn>
+                      <v-btn color="green accent-2" @click="addOperationDialog = false">Cancelar</v-btn>
+                      <v-spacer></v-spacer>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-text-field>
+            </v-card-title>
             <v-data-table :headers="headers" :items="items" :items-per-page="10" :footer-props="{
                 'items-per-page-text': 'Operaciones por página:'
               }" class="elevation-2">
@@ -114,15 +160,17 @@
   import Slidebar from "@/components/Slidebar";
   import ClientDataService from "@/services/ClientDataService";
   import OperationDataService from "@/services/OperationDataService";
+  import ProductDataService from "@/services/ProductDataService";
   export default {
   name: "Client",
     components: {Slidebar},
     data: () => ({
+      id: 0,
       headers: [
-        { text: 'ID Operation', align: 'start', sortable: true, value: 'operationId' },
+        { text: 'ID Operación', align: 'start', sortable: true, value: 'operationId' },
         { text: 'Fecha', value: 'operationDate', sortable: false },
-        { text: 'Total Compra', value: 'total', sortable: false },
-        { text: 'Total A Pagar', value: 'future', sortable: false },
+        { text: 'Total compra', value: 'total', sortable: false },
+        { text: 'Total a pagar', value: 'future', sortable: false },
         { text: 'Pagado', value: 'balance', sortable: false },
         { text: 'Detalles', value: 'actions', sortable: false }
       ],
@@ -149,13 +197,18 @@
         total: 0,
       },
       editClientDialog: false,
+      addOperationDialog: false,
       items: [],
-      operations: []
+      operations: [],
+      products: [],
+      productsSelected: [],
     }),
     mounted() {
+      this.id = localStorage.getItem('id');
       this.clientId = this.$route.params.id;
       this.getClientById();
       this.getOperations();
+      this.getProducts();
     },
     created() {
       if (!localStorage.getItem('token')) {
@@ -208,6 +261,33 @@
           })
         }).catch(e => console.log(e))
       },
+      getProducts() {
+        this.products = [];
+        ProductDataService.getProductsByAccountId(this.id).then(response => {
+          const values = response.data;
+          values.forEach(value => {
+            const product = {
+              id: value.id,
+              name: value.name,
+              measurement: value.measurement,
+              unitCost: value.unit_cost,
+              quantity: null,
+            }
+            this.products.push(product);
+          });
+        }).catch(e => console.log(e));
+      },
+      addOperation() {
+        OperationDataService.saveOperation({}, this.clientId).then(response => {
+          const operationId = response.data.id;
+          this.productsSelected.forEach(product => {
+            const data = { quantity: product.quantity };
+            OperationDataService.saveProductOnOperation(operationId, product.id, data).then(response => {
+              console.log(response);
+            });
+          });
+        });
+      }
     },
 
   }
