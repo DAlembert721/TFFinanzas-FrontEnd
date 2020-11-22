@@ -282,8 +282,9 @@
           const operationId = response.data.id;
           this.productsSelected.forEach(product => {
             const data = { quantity: product.quantity };
-            OperationDataService.saveProductOnOperation(operationId, product.id, data).then(response => {
-              console.log(response);
+            OperationDataService.saveProductOnOperation(operationId, product.id, data).then(() => {
+              this.productsSelected = [];
+              this.getOperations();
             });
           });
         });
