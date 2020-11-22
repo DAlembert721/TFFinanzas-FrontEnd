@@ -83,12 +83,12 @@
         </v-row>
       </v-col>
       <v-col class="col-sm-9">
-        <v-row class="d-flex justify-center py-5">
+        <v-row class="d-flex justify-center pt-5">
           <h2 class="pr-2">Tasa de interés compensatorio: </h2>
           <h2 class="pr-2">{{ client.compensatory_value + '%' }}</h2>
           <h2>{{ client.rate_name }}</h2>
         </v-row>
-        <v-row class="d-flex justify-center">
+        <v-row class="d-flex justify-center pb-5">
           <h2 class="pr-2">Tasa de interés moratorio: </h2>
           <h2 class="pr-2">{{ client.moratorium_value + '%' }}</h2>
           <h2>{{ client.rate_name }}</h2>
@@ -100,7 +100,7 @@
                 'items-per-page-text': 'Operaciones por página:'
               }" class="elevation-2">
               <template v-slot:item.actions="{ item }">
-                <v-icon class="mr-2" @click="editItem(item)">mdi-dots-horizontal</v-icon>
+                <v-icon small class="mr-2" @click="editItem(item)">mdi-menu</v-icon>
               </template>
             </v-data-table>
           </v-card>
@@ -121,7 +121,6 @@
       headers: [
         { text: 'ID Operation', align: 'start', sortable: true, value: 'operationId' },
         { text: 'Fecha', value: 'operationDate', sortable: false },
-        { text: 'Cantidad de operaciones', value: 'operationsQuantity', sortable: false },
         { text: 'Total Compra', value: 'total', sortable: false },
         { text: 'Total A Pagar', value: 'future', sortable: false },
         { text: 'Pagado', value: 'balance', sortable: false },
