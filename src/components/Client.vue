@@ -53,7 +53,7 @@
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-text-field v-model="client.rate_value" label="Tasa de interés"></v-text-field>
+                    <v-text-field v-model="client.compensatory_value" label="Tasa de interés"></v-text-field>
                   </v-col>
                   <v-col>
                     <v-select  label="Tipo tasa"></v-select>
@@ -84,15 +84,20 @@
       </v-col>
       <v-col class="col-sm-9">
         <v-row class="d-flex justify-center py-5">
-          <h2 class="pr-2">Tasa de interés: </h2>
-          <h2 class="pr-2">{{ client.rate_value + '%' }}</h2>
+          <h2 class="pr-2">Tasa de interés compensatorio: </h2>
+          <h2 class="pr-2">{{ client.compensatory_value + '%' }}</h2>
+          <h2>{{ client.rate_name }}</h2>
+        </v-row>
+        <v-row class="d-flex justify-center">
+          <h2 class="pr-2">Tasa de interés moratorio: </h2>
+          <h2 class="pr-2">{{ client.moratorium_value + '%' }}</h2>
           <h2>{{ client.rate_name }}</h2>
         </v-row>
         <v-row class="d-flex justify-center">
           <v-card>
-            <v-card-title>Facturas</v-card-title>
+            <v-card-title>Operaciones</v-card-title>
             <v-data-table :headers="headers" :items="items" :items-per-page="10" :footer-props="{
-                'items-per-page-text': 'Facturas por página:'
+                'items-per-page-text': 'Operaciones por página:'
               }" class="elevation-2">
               <template v-slot:item.actions="{ item }">
                 <v-icon class="mr-2" @click="editItem(item)">mdi-dots-horizontal</v-icon>
@@ -108,16 +113,18 @@
 <script>
   import Slidebar from "@/components/Slidebar";
   import ClientDataService from "@/services/ClientDataService";
-  import BillDataService from "@/services/BillDataService";
+  import OperationDataService from "@/services/OperationDataService";
   export default {
   name: "Client",
     components: {Slidebar},
     data: () => ({
       headers: [
-        { text: 'ID Factura', align: 'start', sortable: true, value: 'billId' },
-        { text: 'Fecha', value: 'date', sortable: false },
+        { text: 'ID Operation', align: 'start', sortable: true, value: 'operationId' },
+        { text: 'Fecha', value: 'operationDate', sortable: false },
         { text: 'Cantidad de operaciones', value: 'operationsQuantity', sortable: false },
-        { text: 'Pago total', value: 'totalPay', sortable: false },
+        { text: 'Total Compra', value: 'total', sortable: false },
+        { text: 'Total A Pagar', value: 'future', sortable: false },
+        { text: 'Pagado', value: 'balance', sortable: false },
         { text: 'Detalles', value: 'actions', sortable: false }
       ],
       clientId: null,
@@ -129,12 +136,12 @@
         phone: '',
         dni: '',
         credit_total: 0,
-        rate_value: 0,
+        compensatory_value: 0,
+        moratorium_value: 0,
         rate_id: '',
         rate_name: '',
-        payday: null,
         quotation: 1,
-        billing_closing: '',
+        open_date: '',
         maintenance: 0
       },
       bill: {
@@ -144,12 +151,12 @@
       },
       editClientDialog: false,
       items: [],
-      bills: []
+      operations: []
     }),
     mounted() {
       this.clientId = this.$route.params.id;
       this.getClientById();
-      this.getBills();
+      this.getOperations();
     },
     created() {
       if (!localStorage.getItem('token')) {
@@ -158,8 +165,8 @@
     },
     methods: {
       editItem(item) {
-        const id = item.billId;
-        this.$router.push(`/bill/${id}`)
+        const id = item.operationId;
+        this.$router.push(`/operations/${id}`)
       },
       getClientById() {
         ClientDataService.getClientByAccountIdAndId(this.clientId).then(response => {
@@ -169,27 +176,36 @@
           this.client.email = clientResponse.email;
           this.client.address = clientResponse.address;
           this.client.dni = clientResponse.dni;
-          this.client.rate_value = clientResponse.rate_value;
+          this.client.compensatory_value = clientResponse.compensatory_value;
+          this.client.moratorium_value = clientResponse.moratorium_value;
           this.client.rate_name = clientResponse.rate_name;
+          this.client.open_date = clientResponse.open_date;
           this.client.phone = clientResponse.phone;
           this.client.credit_total = clientResponse.credit_total;
-          this.client.payday = clientResponse.payday;
+          this.client.rate_id = clientResponse.rate_id;
+          this.client.maintenance = clientResponse.maintenance;
         })
         .catch(e => console.log(e));
       },
-      getBills() {
-        BillDataService.getBillByClientId(this.clientId)
+      getOperations() {
+        OperationDataService.getOperationsByClientId(this.clientId)
         .then(response => {
           this.items = [];
           const values = response.data;
           values.forEach(value => {
-            const bill = {
-              billId: value.id,
-              date: value.date,
-              operationsQuantity: value.total,
-              totalPay: value.balance
+            const operation = {
+              operationId: value.id,
+              operationDate: value.operation_date,
+              state: value.state,
+              delivery: value.delivery,
+              balance: value.balance,
+              future: value.future - value.maintenance,
+              time: value.time,
+              total: value.total,
+              maintenance: value.maintenance,
+              payDate: value.pay_date,
             }
-            this.items.push(bill);
+            this.items.push(operation);
           })
         }).catch(e => console.log(e))
       },
