@@ -38,50 +38,27 @@
                             <v-card-title>Editar cliente</v-card-title>
                             <v-card-text>
                                 <v-row>
-                                    <v-text-field v-model="client.first_name" label="Nombres"></v-text-field>
-                                </v-row>
-                                <v-row>
-                                    <v-text-field v-model="client.last_name" label="Apellidos"></v-text-field>
-                                </v-row>
-                                <v-row>
-                                    <v-text-field v-model="client.phone" label="Celular"></v-text-field>
-                                </v-row>
-                                <v-row>
-                                    <v-text-field v-model="client.dni" label="DNI"></v-text-field>
-                                </v-row>
-                                <v-row>
-                                    <v-text-field v-model="client.email" label="Email"></v-text-field>
-                                </v-row>
-                                <v-row>
                                     <v-text-field v-model="client.address" label="Dirección"></v-text-field>
                                 </v-row>
                                 <v-row>
                                     <v-col>
                                         <v-text-field v-model="client.compensatory_value"
-                                                      label="Tasa de interés"></v-text-field>
+                                                      label="Tasa de interés compensatorio"></v-text-field>
                                     </v-col>
                                     <v-col>
-                                        <v-select label="Tipo tasa"></v-select>
+                                        <v-text-field v-model="client.moratorium_value"
+                                                      label="Tasa de interés moratorio"></v-text-field>
                                     </v-col>
                                 </v-row>
                                 <v-row>
-                                    <v-text-field v-model="client.payday" label="Día de pago"></v-text-field>
-                                </v-row>
-                                <v-row>
-                                    <v-col>
-                                        <v-text-field v-model="client.credit_total"
-                                                      label="Línea de crédito"></v-text-field>
-                                    </v-col>
-                                    <v-col>
-                                        <v-select label="Moneda"></v-select>
-                                    </v-col>
+                                    <v-text-field v-model="client.credit_total"
+                                                  label="Línea de crédito"></v-text-field>
                                 </v-row>
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn color="green accent-2" @click="editClient = false">Cancelar</v-btn>
-                                <v-btn color="green accent-2" @click="editClient = false">Eliminar</v-btn>
-                                <v-btn color="green accent-2" @click="editClient = false">Guardar</v-btn>
+                                <v-btn color="green accent-2" @click="editClientDialog = false">Cancelar</v-btn>
+                                <v-btn color="green accent-2" @click="editClientById">Guardar</v-btn>
                                 <v-spacer></v-spacer>
                             </v-card-actions>
                         </v-card>
@@ -379,6 +356,18 @@
                 })
 
 
+            },
+            editClientById() {
+                const data = {
+                    compensatory_value: this.client.compensatory_value,
+                    moratorium_value: this.client.moratorium_value,
+                    address: this.client.address,
+                    credit_total: this.client.credit_total,
+                }
+                ClientDataService.updateClient(this.clientId, data)
+                    .then(() => {
+                        location.reload()
+                    })
             }
         },
 

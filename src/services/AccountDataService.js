@@ -31,8 +31,20 @@ class AccountDataService {
         });
     }
 
-    updateAccountById(id, data) {
-        return http.put(`api/accounts/${id}/`, data, {
+    updateAccountById(id, data, password) {
+        let account
+        if (password != null) {
+            account = {
+                email: data.email,
+                address: data.address,
+                organization: data.organization,
+                phone: data.phone,
+                password: password
+            }
+        }
+        else
+            account = data
+        return http.patch(`api/accounts/${id}/`, account, {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
         });
     }

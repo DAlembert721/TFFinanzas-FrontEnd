@@ -20,6 +20,13 @@ class ClientDataService {
         return http.get(`api/accounts/${accountId}/clients/${id}/`, {
             headers: authHeader()});
     }
+
+    updateClient(clientId, data) {
+        const accountId = localStorage.getItem('id')
+        return http.patch(`api/accounts/${accountId}/clients/${clientId}/`, data, {
+            headers: authHeader()
+        });
+    }
 }
 
 export default new ClientDataService();
