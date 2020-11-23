@@ -22,8 +22,11 @@
           <div>
             <strong>Email:</strong> {{ account.email }}
           </div>
-          <div class="pb-3">
+          <div>
             <strong>Dirección:</strong> {{ account.address }}
+          </div>
+          <div class="pb-3">
+            <strong>Tienda:</strong> {{ account.organization }}
           </div>
           <v-dialog v-model="editDialog" max-width="40%">
             <template v-slot:activator="{ on, attribs }">
@@ -34,16 +37,10 @@
               <v-card-text>
                 <v-container>
                   <v-row>
-                    <v-text-field v-model="account.first_name" label="Nombre"></v-text-field>
-                  </v-row>
-                  <v-row>
-                    <v-text-field v-model="account.last_name" label="Apellidos"></v-text-field>
-                  </v-row>
-                  <v-row>
                     <v-text-field v-model="account.phone" label="Celular"></v-text-field>
                   </v-row>
                   <v-row>
-                    <v-text-field v-model="account.dni" label="DNI"></v-text-field>
+                    <v-text-field v-model="account.organization" label="Tienda"></v-text-field>
                   </v-row>
                   <v-row>
                     <v-text-field v-model="account.email" label="Email"></v-text-field>
@@ -54,6 +51,7 @@
                   <v-row>
                     <v-text-field :append-icon="hidePassword ? 'mdi-eye' : 'mdi-eye-off'"
                                   :type="hidePassword ? 'password' : 'text'"
+                                  v-model="password"
                                   @click:append="() => (hidePassword = !hidePassword)"
                                   label="Contraseña">
                     </v-text-field>
@@ -94,7 +92,8 @@
         location: ""
       },
       editDialog: false,
-      hidePassword: true
+      hidePassword: true,
+      password: null
     }),
     mounted() {
       this.id = localStorage.getItem('id')
@@ -110,7 +109,13 @@
         });
       },
       updateUserById() {
-        AccountDataService.updateAccountById(this.id, this.account).then(response => {
+        const data = {
+          email: this.account.email,
+          address: this.account.address,
+          organization: this.account.organization,
+          phone: this.account.phone,
+        }
+        AccountDataService.updateAccountById(this.id, data, this.password).then(response => {
           console.log(response);
         }).catch(e => {
           console.log(e);
