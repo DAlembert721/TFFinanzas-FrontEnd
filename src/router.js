@@ -23,6 +23,6 @@ export default new Router({
         { path: '/profile', name: 'profile', component: Profile },
         { path: '/client/:id', name: 'client', component: Client },
         { path: '/product', name: 'product', component: Product },
-        { path: '/bill/:id', name: 'bill', component: Operation }
+        { path: '/client/:clientId/operation/:operationId', name: 'operation', component: Operation }
     ]
 })

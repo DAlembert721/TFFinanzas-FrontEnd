@@ -151,6 +151,27 @@
             </v-data-table>
           </v-card>
         </v-row>
+        <v-row class="d-flex justify-end pr-10 py-8">
+          <v-dialog slot="append" v-model="addPaymentDialog" max-width="20%">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="green accent-2" v-bind="attrs" v-on="on">Pagar</v-btn>
+            </template>
+            <v-card>
+              <v-card-title>Agregar pago</v-card-title>
+              <v-card-text>
+                <v-row>
+                  <v-text-field v-model="payment" placeholder="Ingresa monto" prefix="S/"></v-text-field>
+                </v-row>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="green accent-2" @click="addPayment()">Agregar</v-btn>
+                <v-btn color="green accent-2" @click="addPaymentDialog = false">Cancelar</v-btn>
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-row>
       </v-col>
     </v-row>
   </v-container>
@@ -198,10 +219,12 @@
       },
       editClientDialog: false,
       addOperationDialog: false,
+      addPaymentDialog: false,
       items: [],
       operations: [],
       products: [],
       productsSelected: [],
+      payment: 0,
     }),
     mounted() {
       this.id = localStorage.getItem('id');
@@ -218,7 +241,7 @@
     methods: {
       editItem(item) {
         const id = item.operationId;
-        this.$router.push(`/operations/${id}`)
+        this.$router.push(`/client/${this.clientId}/operation/${id}`)
       },
       getClientById() {
         ClientDataService.getClientByAccountIdAndId(this.clientId).then(response => {
@@ -283,11 +306,15 @@
           this.productsSelected.forEach(product => {
             const data = { quantity: product.quantity };
             OperationDataService.saveProductOnOperation(operationId, product.id, data).then(() => {
-              this.productsSelected = [];
               this.getOperations();
-            });
+            }).catch(e => console.log(e));
           });
-        });
+          this.productsSelected = [];
+          this.addOperationDialog = false;
+        }).catch(e => console.log(e));
+      },
+      addPayment() {
+
       }
     },
 
