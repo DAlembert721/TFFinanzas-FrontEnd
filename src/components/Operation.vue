@@ -84,6 +84,9 @@
             </v-card-text>
           </v-card>
         </v-row>
+        <v-row class="mt-5 justify-center">
+          <v-btn @click="exportPdf" color="green accent-2"> Exportar Boleta</v-btn>
+        </v-row>
       </v-col>
       <v-spacer></v-spacer>
     </v-row>
@@ -93,6 +96,8 @@
 <script>
 import Slidebar from "@/components/Slidebar";
 import OperationDataService from "@/services/OperationDataService";
+import JsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
 export default {
   name: "Operation",
@@ -131,6 +136,30 @@ export default {
       OperationDataService.getOperationByClientIdAndId(this.clientId, this.operationId).then(response => {
         this.operation = response.data;
       })
+    },
+    exportPdf() {
+      let columns = ['Nombre de Producto', 'Costo por unidad', 'Unidad', 'Cantidad', 'Total'];
+      let doc = new JsPDF()
+      let y = 0
+      let items = []
+      this.items.forEach(product => {
+        const array = [`${product.product_name}`, `${product.unit_cost}`, `${product.measurement}`, `${product.quantity}`, `${product.total}`]
+        items.push(array)
+      })
+      doc.text(`ID Operacion: ${this.operation.id}`, 10, y+=10)
+      doc.text(`Fecha: ${this.operation.operation_date}`, 10, y+=10)
+      doc.text(`Plazo de Pago: ${this.operation.time}`, 10, y+=10)
+      doc.text(`Total: ${this.operation.total}`, 10, y+=10)
+      doc.text(`A pagar: ${this.operation.future}`, 10, y+=10)
+      doc.text(`Delivery: ${this.operation.delivery}`, 10, y+=10)
+      if (this.operation.maintenance > 0) {
+        doc.text(`Maintenance: ${this.operation.maintenance}`, 10, y+=10)
+      }
+      if (this.payed > 0) {
+        doc.text(`Monto Pagado: ${this.operation.payed}`, 10, y+=10)
+      }
+      autoTable(doc, {head: [columns], body: items, margin: {top: y+10, bottom: 20}})
+      doc.save(`boleta-operation-${this.operation.id}-${this.operation.operation_date}.pdf`)
     }
   }
 }
