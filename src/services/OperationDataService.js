@@ -9,7 +9,7 @@ class OperationDataService {
             header: authHeader()} );
     }
 
-    getOperationByClientId(clientId, operationId) {
+    getOperationByClientIdAndId(clientId, operationId) {
         return http.get(`api/clients/${clientId}/operations/${operationId}/`, {
             header: authHeader()} );
     }
@@ -24,6 +24,10 @@ class OperationDataService {
 
     getProductsByOperationId(operationId) {
         return http.get(`api/operations/${operationId}/operations-products/`);
+    }
+    payOperation(clientId, operationId, data) {
+        return http.patch(`api/clients/${clientId}/operations/${operationId}/`
+            , data, {header: authHeader()});
     }
 }
 export default new OperationDataService();

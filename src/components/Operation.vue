@@ -18,13 +18,26 @@
               </v-row>
               <v-row>
                 <h3 class="pr-2">Total:</h3>
-                <h3 class="pr-2">{{ operation.balance }}</h3>
+                <h3 class="pr-2">{{ operation.total }}</h3>
               </v-row>
               <v-row>
-                <h3 class="pr-2">Saldo final: </h3>
+                <h3 class="pr-2">A pagar: </h3>
                 <h3 class="pr-2">{{ operation.future }}</h3>
               </v-row>
               <v-row>
+                <h3 class="pr-2">Plazo de pago: </h3>
+                <h3 class="pr-2">{{ operation.time }} días</h3>
+              </v-row>
+              <v-row>
+                <h3 class="pr-2">Delivery: </h3>
+                <h3 class="pr-2">{{ operation.delivery }}</h3>
+              </v-row>
+              <v-row v-if="!(operation.maintenance == 0)">
+                <h3 class="pr-2">Mantenimiento: </h3>
+                <h3 class="pr-2">{{ operation.maintenance }}</h3>
+              </v-row>
+              <v-spacer></v-spacer>
+              <v-row class="mt-3">
                 <h2>Productos:</h2>
               </v-row>
               <v-row class="mt-5">
@@ -115,7 +128,7 @@ export default {
       }).catch((e) => console.log(e));
     },
     getOperationByClientId(){
-      OperationDataService.getOperationByClientId(this.clientId, this.operationId).then(response => {
+      OperationDataService.getOperationByClientIdAndId(this.clientId, this.operationId).then(response => {
         this.operation = response.data;
       })
     }
