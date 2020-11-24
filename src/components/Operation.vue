@@ -17,12 +17,16 @@
                 <h3 class="pr-2">{{ operation.operation_date }}</h3>
               </v-row>
               <v-row>
-                <h3 class="pr-2">Total:</h3>
-                <h3 class="pr-2">{{ operation.total }}</h3>
+                <h3 class="pr-2">Monto total(incluye delivery):</h3>
+                <h3 class="pr-2">{{ operation.total }} {{client.currency}}</h3>
+              </v-row>
+              <v-row v-if="(operation.payed > 0)">
+                <h3 class="pr-2">Monto pagado hasta el momento: </h3>
+                <h3 class="pr-2">{{ operation.payed }}</h3>
               </v-row>
               <v-row>
-                <h3 class="pr-2">A pagar: </h3>
-                <h3 class="pr-2">{{ operation.future }}</h3>
+                <h3 class="pr-2">Monto a pagar: </h3>
+                <h3 class="pr-2">{{ operation.future }}  {{client.currency}}</h3>
               </v-row>
               <v-row>
                 <h3 class="pr-2">Plazo de pago: </h3>
@@ -30,11 +34,19 @@
               </v-row>
               <v-row>
                 <h3 class="pr-2">Delivery: </h3>
-                <h3 class="pr-2">{{ operation.delivery }}</h3>
+                <h3 class="pr-2">{{ operation.delivery }} {{client.currency}}</h3>
               </v-row>
               <v-row v-if="!(operation.maintenance == 0)">
                 <h3 class="pr-2">Mantenimiento: </h3>
                 <h3 class="pr-2">{{ operation.maintenance }}</h3>
+              </v-row>
+              <v-row v-if="!(client.compensatory_value == 0)">
+                <h3 class="pr-2">Tasa de interes en el plazo: </h3>
+                <h3 class="pr-2">{{ client.compensatory_value }} %  {{client.rate_name}}</h3>
+              </v-row>
+              <v-row v-if="!(client.moratorium_value == 0)">
+                <h3 class="pr-2">Tasa de interes adicional fuera del plazo: </h3>
+                <h3 class="pr-2">{{ client.moratorium_value }} %  {{client.rate_name}}</h3>
               </v-row>
               <v-spacer></v-spacer>
               <v-row class="mt-3">
@@ -98,6 +110,7 @@ import Slidebar from "@/components/Slidebar";
 import OperationDataService from "@/services/OperationDataService";
 import JsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import ClientDataService from "@/services/ClientDataService";
 
 export default {
   name: "Operation",
@@ -114,12 +127,14 @@ export default {
     addOperation: false,
     operationDetails: false,
     items: [],
+    client: null,
   }),
   mounted() {
     this.clientId = this.$route.params.clientId;
     this.operationId = this.$route.params.operationId;
     this.getProductsByOperationId();
     this.getOperationByClientId();
+    this.getClientById();
   },
   created() {
     if (!localStorage.getItem('token')) {
@@ -149,18 +164,25 @@ export default {
       doc.text(`ID Operacion: ${this.operation.id}`, 10, y+=10)
       doc.text(`Fecha: ${this.operation.operation_date}`, 10, y+=10)
       doc.text(`Plazo de Pago: ${this.operation.time}`, 10, y+=10)
-      doc.text(`Total: ${this.operation.total}`, 10, y+=10)
-      doc.text(`A pagar: ${this.operation.future}`, 10, y+=10)
-      doc.text(`Delivery: ${this.operation.delivery}`, 10, y+=10)
+      doc.text(`Monto total(incluye delivery): ${this.operation.total}  ${this.client.currency}`, 10, y+=10)
+      if (this.payed > 0) {
+        doc.text(`Monto Pagado hasta el momento: ${this.operation.payed}`, 10, y+=10)
+      }
+      doc.text(`Monto a pagar: ${this.operation.future}  ${this.client.currency}`, 10, y+=10)
+      doc.text(`Delivery: ${this.operation.delivery}  ${this.client.currency}`, 10, y+=10)
       if (this.operation.maintenance > 0) {
         doc.text(`Maintenance: ${this.operation.maintenance}`, 10, y+=10)
       }
-      if (this.payed > 0) {
-        doc.text(`Monto Pagado: ${this.operation.payed}`, 10, y+=10)
-      }
+      doc.text(`Tasa de interes en el plazo: ${this.client.compensatory_value} % ${this.client?.rate_name}`, 10, y+=10)
+      doc.text(`Tasa de interes adicional fuera del plazo: ${this.client.moratorium_value} %  ${this.client?.rate_name}`, 10, y+=10)
       autoTable(doc, {head: [columns], body: items, margin: {top: y+10, bottom: 20}})
       doc.save(`boleta-operation-${this.operation.id}-${this.operation.operation_date}.pdf`)
-    }
+    },
+    getClientById() {
+      ClientDataService.getClientByAccountIdAndId(this.clientId).then(response => {
+        this.client = response.data;
+      }).catch(e => console.log(e));
+    },
   }
 }
 </script>
