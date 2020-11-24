@@ -161,6 +161,12 @@
                     <v-btn color="green accent-2" class="justify-center d-flex" @click="addPaymentDialog = true">Pagar
                     </v-btn>
                 </v-row>
+                <v-row v-if="flag" class="justify-center mt-5">
+                    <h3>Se pagaron: {{ pays }} operaciones</h3>
+                </v-row>
+                <v-row v-if="change" class="justify-center mt-5">
+                    <h3>Su cambio es de {{ payment + ' ' + client.currency }}</h3>
+                </v-row>
                 <v-row class="d-flex justify-end pr-10 py-8">
                     <v-dialog slot="append" v-model="addPaymentDialog" max-width="20%">
                         <!--template v-slot:activator="{ on, attrs }">
@@ -203,8 +209,9 @@
                 {text: 'ID Operación', align: 'start', sortable: true, value: 'operationId'},
                 {text: 'Fecha', value: 'operationDate', sortable: false},
                 {text: 'Plazo de pago (dias)', value: 'time', sortable: false},
-                {text: 'Total compra', value: 'total', sortable: false},
-                {text: 'Total a pagar', value: 'future', sortable: false},
+                {text: 'Monto Total de Compra', value: 'total', sortable: false},
+                {text: 'Monto por saldar(sin intereses)', value: 'balance', sortable: false},
+                {text: 'Monto Total a Pagar', value: 'future', sortable: false},
                 {text: 'Monto Pagado', value: 'payed', sortable: false},
                 {text: 'Fecha de pago o anticipado', value: 'payDate', sortable: false},
                 {text: 'Detalles', value: 'actions', sortable: false}
@@ -239,6 +246,9 @@
             productsSelected: [],
             payment: 0,
             search: null,
+            change: false,
+            pays: 0,
+            flag: false,
         }),
         mounted() {
             this.id = localStorage.getItem('id');
@@ -289,7 +299,7 @@
                                 operationDate: value.operation_date,
                                 state: value.state,
                                 delivery: value.delivery,
-                                balance: value.balance,
+                                balance: this.setBalance(value),
                                 payed: value.payed,
                                 future: value.future,
                                 time: value.time,
@@ -331,30 +341,39 @@
                 }).catch(e => console.log(e));
             },
             addPayment() {
+                this.pays = 0
                 let toPayOperations = [];
                 this.items.forEach(operation => {
                     if (!operation.state) {
                         toPayOperations.push(operation);
                     }
                 })
-                toPayOperations.sort((a, b) => (a.id < b.id) ? 1 : -1);
+                toPayOperations.sort((a, b) => (a.operationDate > b.operationDate) ? 1 : -1);
                 console.log(toPayOperations);
                 toPayOperations.forEach(operation => {
-                    const pay = (operation.future <= this.payment) ? (() => {
-                            this.payment -= operation.future
-                            return operation.future
-                        })
-                        : this.payment
+                    // console.log(operation)
+                    const pay = this.setSinglePay(operation)
+                    console.log(pay)
                     const data = {
                         payed: pay
                     }
                     OperationDataService.payOperation(this.clientId, operation.operationId, data)
                         .then(() => {
-                            this.addPaymentDialog = false
+                            this.pays++
                             this.getOperations()
-                        })
+                            this.addPaymentDialog = false
+
+                        });
                 })
 
+                if (this.payment > 0) {
+                    this.addPaymentDialog = false
+                    this.payment = Number.parseFloat(this.payment).toFixed(2)
+                    this.change = true
+                }
+                if (this.pays > 0) {
+                    this.flag = true
+                }
 
             },
             editClientById() {
@@ -368,7 +387,27 @@
                     .then(() => {
                         location.reload()
                     })
+            },
+            setBalance(value) {
+                if (value.balance <= 0){
+                    if(value.state){
+                        return 0
+                    }
+                    return value.total
+                }
+                return value.balance
+            },
+            setSinglePay(operation) {
+                const pay = this.payment
+                if (operation.future <= this.payment){
+                    this.payment -= operation.future
+                    this.payment = Number.parseFloat(this.payment).toFixed(2)
+                    return operation.future
+                }
+                this.payment = 0
+                return pay
             }
+
         },
 
     }
