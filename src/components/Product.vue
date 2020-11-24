@@ -66,7 +66,10 @@
                     </v-row>
                     <v-row>
                       <v-col>
-                        <v-text-field v-model="item.unit_cost" label="Costo por unidad"></v-text-field>
+                        <v-text-field v-model="item.unit_cost"
+                                      :rules="numberRule"
+                                      error-count="2"
+                                      type="number" label="Costo por unidad"></v-text-field>
                       </v-col>
                       <v-col>
                         <v-select v-model="UOMChose"
@@ -132,6 +135,7 @@
       },
       items: [],
       search: null,
+      numberRule: [v => !isNaN(parseFloat(v)) && parseFloat(v) >= 0 || 'El numero debe de ser positivo'],
     }),
     mounted() {
       this.id = localStorage.getItem('id')
