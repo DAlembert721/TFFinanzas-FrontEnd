@@ -69,6 +69,9 @@
                         <v-row>
                           <v-col>
                             <v-text-field v-model="client.credit_total"
+                                          :rules="numberRule"
+                                          error-count="2"
+                                          type="number"
                                           label="Línea de crédito"
                                           prefix="S/"></v-text-field>
                           </v-col>
@@ -80,6 +83,9 @@
                         <v-row>
                           <v-col>
                             <v-text-field v-model="client.maintenance" label="Mantenimiento"
+                                          :rules="numberRule"
+                                          error-count="2"
+                                          type="number"
                                           prefix="S/"></v-text-field>
                           </v-col>
                         </v-row>
@@ -88,10 +94,16 @@
                     <v-row>
                       <v-col>
                         <v-text-field v-model="client.compensatory_value"
+                                      :rules="numberRule"
+                                      error-count="2"
+                                      type="number"
                                       label="Tasa de interés" suffix="%"></v-text-field>
                       </v-col>
                       <v-col>
                         <v-text-field v-model="client.moratorium_value"
+                                      :rules="numberRule"
+                                      error-count="2"
+                                      type="number"
                                       label="Tasa de interés con mora"
                                       suffix="%"></v-text-field>
                       </v-col>
@@ -186,6 +198,7 @@ export default {
     rates: [],
     clients: [],
     search: null,
+    numberRule: [v => !isNaN(parseFloat(v)) && parseFloat(v) >= 0 || 'El numero debe de ser positivo'],
   }),
   mounted() {
     this.id = localStorage.getItem('id')

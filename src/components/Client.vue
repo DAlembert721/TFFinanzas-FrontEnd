@@ -43,15 +43,24 @@
                                 <v-row>
                                     <v-col>
                                         <v-text-field v-model="client.compensatory_value"
-                                                      label="Tasa de interés compensatorio"></v-text-field>
+                                                      label="Tasa de interés compensatorio"
+                                                      :rules="numberRule"
+                                                      error-count="2"
+                                                      type="number"></v-text-field>
                                     </v-col>
                                     <v-col>
                                         <v-text-field v-model="client.moratorium_value"
+                                                      :rules="numberRule"
+                                                      error-count="2"
+                                                      type="number"
                                                       label="Tasa de interés moratorio"></v-text-field>
                                     </v-col>
                                 </v-row>
                                 <v-row>
                                     <v-text-field v-model="client.credit_total"
+                                                  type="number"
+                                                  :rules="numberRule"
+                                                  error-count="2"
                                                   label="Línea de crédito"></v-text-field>
                                 </v-row>
                             </v-card-text>
@@ -98,12 +107,18 @@
                                             <v-row>
                                                 <v-text-field label="Plazo de pago" v-model="operation.time"
                                                               suffix="días"
+                                                              :rules="numberRule"
+                                                              error-count="2"
+                                                              type="number"
                                                               class="align-center mx-3"></v-text-field>
                                             </v-row>
                                             <v-spacer></v-spacer>
                                             <v-row>
                                                 <v-col class="col-sm-10 d-flex align-center">
                                                     <v-text-field label="Delivery"
+                                                                  :rules="numberRule"
+                                                                  error-count="2"
+                                                                  type="number"
                                                                   v-model="operation.delivery"></v-text-field>
 
                                                 </v-col>
@@ -128,7 +143,11 @@
                                                     <h3>{{ product.name }}</h3>
                                                 </v-col>
                                                 <v-col class="col-sm-5 d-flex align-center">
-                                                    <v-text-field v-model="product.quantity" class="m-0 p-0"
+                                                    <v-text-field v-model="product.quantity"
+                                                                  class="m-0 p-0"
+                                                                  :rules="numberRule"
+                                                                  error-count="2"
+                                                                  type="number"
                                                                   label="Cantidad" suffix=""></v-text-field>
                                                 </v-col>
                                                 <v-col class="col-sm-2 d-flex align-center">
@@ -249,6 +268,8 @@
             change: false,
             pays: 0,
             flag: false,
+            numberRule: [v => !isNaN(parseFloat(v)) && parseFloat(v) >= 0 || 'El numero debe de ser positivo'],
+
         }),
         mounted() {
             this.id = localStorage.getItem('id');
@@ -406,7 +427,9 @@
                 }
                 this.payment = 0
                 return pay
-            }
+            },
+
+
 
         },
 
