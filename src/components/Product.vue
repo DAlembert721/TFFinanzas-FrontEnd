@@ -25,7 +25,11 @@
                     </v-row>
                     <v-row>
                       <v-col>
-                        <v-text-field v-model="product.unit_cost" label="Costo por unidad"></v-text-field>
+                        <v-text-field v-model="product.unit_cost"
+                                      :rules="numberRule"
+                                      error-count="2"
+                                      type="number"
+                                      label="Costo por unidad"></v-text-field>
                       </v-col>
                       <v-col>
                         <v-select
