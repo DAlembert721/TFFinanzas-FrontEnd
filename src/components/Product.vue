@@ -124,17 +124,22 @@
       id: 0,
       addProductDialog: false,
       editProductDialog: false,
-      UOMChose: '',
+      UOMChose: { abbr: 'unidades', name: '' },
       product: {
         name: '',
         unit_cost: 0,
         measurement: ''
       },
-      items: []
+      items: [],
+      search: null,
     }),
     mounted() {
       this.id = localStorage.getItem('id')
-      this.getProducts();
+      this.getProducts()
+      //this.getProducts();
+    },
+    created() {
+
     },
     methods: {
       getProducts() {
@@ -143,15 +148,17 @@
         }).catch(e => {
           console.log(e);
         })
+        this.UOMChose = this.unitOfMeasurements;
       },
       saveProduct() {
         this.product.measurement = this.UOMChose.abbr;
+        console.log(this.product)
         ProductDataService.saveProduct(this.id, this.product).then(response => {
           console.log(response);
           this.UOMChose = '';
           this.product = { name: '', unit_cost: 0, measurement: '' };
-          this.getProducts();
           this.addProductDialog = false;
+          window.location.reload()
         }).catch(e => {
           console.log(e);
         });
